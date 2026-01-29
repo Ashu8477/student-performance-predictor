@@ -27,7 +27,6 @@ def encode_data(df):
 df = pd.read_csv("student-data.csv")
 df = encode_data(df)
 
-# IMPORTANT: only those features which UI uses
 FEATURES = [
     "studytime",
     "failures",
@@ -49,7 +48,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # =========================
-# Train Model (Random Forest)
+# Train Model
 # =========================
 model = RandomForestClassifier(
     n_estimators=300,
@@ -83,7 +82,6 @@ def metrics():
 def predict():
     data = request.json
 
-    # Build input EXACTLY like training
     input_df = pd.DataFrame([{
         "studytime": int(data["studytime"]),
         "failures": int(data["failures"]),
