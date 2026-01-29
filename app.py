@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
@@ -22,7 +22,7 @@ def encode_data(df):
     return df
 
 # =========================
-# Load & Prepare Data
+# Load Data
 # =========================
 df = pd.read_csv("student-data.csv")
 df = encode_data(df)
@@ -67,9 +67,11 @@ f1 = round(f1_score(y_test, y_pred), 2)
 # =========================
 # Routes
 # =========================
+
+# index.html SAME folder se serve hoga
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return send_from_directory(".", "index.html")
 
 @app.route("/metrics")
 def metrics():
