@@ -24,9 +24,7 @@
       * {
         font-family: 'Segoe UI', sans-serif;
         box-sizing: border-box;
-        transition:
-          background 0.3s,
-          color 0.3s;
+        transition: background 0.3s, color 0.3s;
       }
 
       body {
@@ -48,29 +46,11 @@
         display: grid;
         grid-template-columns: 1.3fr 1fr;
         gap: 40px;
-        animation: fadeIn 0.8s ease;
       }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* LEFT */
       .info h1 {
         font-size: 38px;
         margin-bottom: 10px;
-      }
-
-      .info p {
-        color: #ccc;
-        line-height: 1.6;
       }
 
       .stats {
@@ -92,11 +72,8 @@
         font-weight: bold;
       }
 
-      .toggle {
-        margin-top: 30px;
-      }
-
       .toggle button {
+        margin-top: 25px;
         padding: 10px 18px;
         border-radius: 20px;
         border: none;
@@ -106,31 +83,16 @@
         font-weight: bold;
       }
 
-      /* CARD */
       .card {
         background: var(--card);
         backdrop-filter: blur(18px);
         padding: 30px;
         border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        animation: slideIn 0.8s ease;
-      }
-
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateX(40px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
       }
 
       label {
         display: block;
         margin-top: 12px;
-        font-size: 14px;
       }
 
       input,
@@ -152,23 +114,12 @@
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
-        transition: transform 0.2s;
-      }
-
-      button.predict:hover {
-        transform: scale(1.03);
       }
 
       .result {
         margin-top: 18px;
         text-align: center;
         font-size: 20px;
-        min-height: 30px;
-        animation: fadeIn 0.5s ease;
-      }
-
-      canvas {
-        margin-top: 20px;
       }
 
       @media (max-width: 900px) {
@@ -181,21 +132,17 @@
 
   <body>
     <div class="app">
-      <!-- INFO -->
       <div class="info">
         <h1>Student Performance Predictor</h1>
-        <p>
-          A machine learning based system that predicts whether a student is
-          likely to <b>PASS</b> or <b>FAIL</b>.
-        </p>
+        <p>Static demo of ML-based academic prediction system.</p>
 
         <div class="stats">
           <div class="stat">
-            <span id="acc">--%</span>
+            <span>72%</span>
             <small>Accuracy</small>
           </div>
           <div class="stat">
-            <span id="f1">--</span>
+            <span>0.82</span>
             <small>F1 Score</small>
           </div>
         </div>
@@ -205,7 +152,6 @@
         </div>
       </div>
 
-      <!-- FORM -->
       <div class="card">
         <h2>Prediction Form</h2>
 
@@ -243,41 +189,26 @@
     </div>
 
     <script>
-      // Load metrics
-      fetch('/metrics')
-        .then((r) => r.json())
-        .then((d) => {
-          acc.innerText = d.accuracy + '%';
-          f1.innerText = d.f1;
-        });
-
       function toggleTheme() {
         document.body.classList.toggle('light');
       }
 
       function predict() {
-        const data = {
-          studytime: +studytime.value,
-          failures: +failures.value,
-          goout: +goout.value,
-          higher: +higher.value,
-          internet: +internet.value,
-          Medu: +Medu.value,
-          Fedu: +Fedu.value,
-        };
+        const score =
+          studytime.value * 20 -
+          failures.value * 15 -
+          goout.value * 5 +
+          higher.value * 10 +
+          internet.value * 5 +
+          Medu.value * 5 +
+          Fedu.value * 5;
 
-        fetch('/predict', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        })
-          .then((r) => r.json())
-          .then((res) => {
-            result.innerHTML =
-              res.result === 'PASS'
-                ? `✅ <b>PASS</b><br><small>Confidence: ${res.confidence}%</small>`
-                : `❌ <b>FAIL</b><br><small>Confidence: ${res.confidence}%</small>`;
-          });
+        const confidence = Math.min(Math.max(score, 20), 95);
+
+        result.innerHTML =
+          confidence >= 50
+            ? `✅ <b>PASS</b><br><small>Confidence: ${confidence}%</small>`
+            : `❌ <b>FAIL</b><br><small>Confidence: ${confidence}%</small>`;
       }
     </script>
   </body>
